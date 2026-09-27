@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instudering – Organisk kemi, kol &amp; förbränning (åk 8)</title>
+<style>
+:root{
+  --bg:#f5f6f7; --surface:#ffffff; --text:#1a1a1a; --text2:#4b5563; --text3:#9ca3af;
+  --border:#e5e7eb; --accent:#1a1a1a; --accent-text:#ffffff;
+  --done-bg:#e8f5e9; --done-border:#a5d6a7; --progress:#1a1a1a;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#111214; --surface:#1c1e21; --text:#f3f4f6; --text2:#c9ced6; --text3:#7a818c;
+    --border:#2e3136; --accent:#f3f4f6; --accent-text:#1a1a1a;
+    --done-bg:#1d2b1e; --done-border:#3d6b40; --progress:#f3f4f6;
+  }
+}
+*{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg); color:var(--text); line-height:1.6; font-size:16px;
+  padding-bottom:80px;
+}
+.wrap{max-width:640px; margin:0 auto; padding:16px;}
+header.top{padding:28px 16px 8px;}
+header.top .kicker{font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--text3); font-weight:600;}
+header.top h1{font-size:24px; font-weight:700; line-height:1.25; margin-top:4px;}
+header.top p.sub{color:var(--text2); font-size:14px; margin-top:6px;}
+/* progress */
+.progress-box{
+  position:sticky; top:0; z-index:50; background:var(--surface);
+  border-bottom:1px solid var(--border); padding:12px 16px; margin:16px -16px 0;
+}
+.progress-box .row{display:flex; justify-content:space-between; align-items:baseline; max-width:640px; margin:0 auto;}
+.progress-box .label{font-size:13px; font-weight:600; color:var(--text2);}
+.progress-box .pct{font-size:13px; font-weight:700; font-variant-numeric:tabular-nums;}
+.bar{max-width:640px; margin:8px auto 0; height:8px; background:var(--border); border-radius:99px; overflow:hidden;}
+.bar>div{height:100%; width:0%; background:var(--progress); border-radius:99px; transition:width .3s ease;}
+/* skolverket box */
+.skolverket{
+  background:var(--surface); border:1px solid var(--border); border-radius:12px;
+  padding:16px; margin:20px 0 8px;
+}
+.skolverket h2{font-size:16px; font-weight:700; display:flex; align-items:center; gap:8px;}
+.skolverket h2 .badge{
+  font-size:11px; font-weight:600; background:var(--bg); border:1px solid var(--border);
+  color:var(--text2); padding:2px 8px; border-radius:99px; white-space:nowrap;
+}
+.skolverket p.note{font-size:12px; color:var(--text3); margin:6px 0 10px;}
+.skolverket ul{list-style:none; display:flex; flex-direction:column; gap:8px;}
+.skolverket li{font-size:13.5px; color:var(--text2); padding-left:20px; position:relative;}
+.skolverket li::before{content:""; position:absolute; left:2px; top:9px; width:8px; height:8px; border-radius:2px; background:var(--text3); opacity:.5;}
+.skolverket li b{color:var(--text); font-weight:600;}
+/* section headings */
+h2.sec{
+  font-size:19px; font-weight:700; margin:32px 0 4px; display:flex; align-items:baseline; gap:8px;
+}
+h2.sec .num{font-size:13px; font-weight:700; color:var(--text3);}
+p.secsub{font-size:13px; color:var(--text3); margin-bottom:12px;}
+/* chapter divider */
+.chapter{
+  margin:28px 0 12px; display:flex; align-items:center; gap:12px;
+}
+.chapter .line{flex:1; height:1px; background:var(--border);}
+.chapter span{font-size:13px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--text2); white-space:nowrap;}
+/* question cards */
+.card{
+  background:var(--surface); border:1px solid var(--border); border-radius:12px;
+  margin-bottom:10px; overflow:hidden; transition:border-color .2s;
+}
+.card.done{border-color:var(--done-border);}
+.card .q{padding:14px 16px;}
+.card .q .qtext{font-size:15.5px; font-weight:500;}
+.card .meta{display:flex; gap:8px; align-items:center; margin-top:10px; flex-wrap:wrap;}
+.btn{
+  display:inline-flex; align-items:center; gap:6px; font-size:13.5px; font-weight:600;
+  border:1px solid var(--border); background:var(--bg); color:var(--text);
+  border-radius:99px; padding:7px 14px; cursor:pointer; min-height:36px;
+}
+.btn:active{transform:scale(.97);}
+.btn.primary{background:var(--accent); color:var(--accent-text); border-color:var(--accent);}
+.check{
+  display:inline-flex; align-items:center; gap:7px; font-size:13.5px; font-weight:600;
+  color:var(--text2); cursor:pointer; user-select:none; min-height:36px; padding:7px 14px;
+  border:1px solid var(--border); border-radius:99px; background:var(--bg);
+}
+.check input{width:16px; height:16px; accent-color:var(--accent); cursor:pointer;}
+.card.done .check{background:var(--done-bg); border-color:var(--done-border); color:var(--text);}
+.answer{display:none; padding:2px 16px 16px;}
+.answer.show{display:block;}
+.answer .inner{
+  background:var(--bg); border-radius:10px; padding:12px 14px; font-size:14.5px; color:var(--text2);
+  border-left:3px solid var(--progress);
+}
+.answer .inner b{color:var(--text); font-weight:600;}
+.answer .inner ul{margin:6px 0 2px 18px;}
+.answer .inner li{margin:3px 0;}
+/* glossary */
+details.term{
+  background:var(--surface); border:1px solid var(--border); border-radius:10px;
+  margin-bottom:6px; overflow:hidden;
+}
+details.term summary{
+  list-style:none; padding:11px 14px; font-size:14.5px; font-weight:600; cursor:pointer;
+  display:flex; justify-content:space-between; align-items:center; min-height:44px;
+}
+details.term summary::-webkit-details-marker{display:none;}
+details.term summary::after{content:"+"; font-size:18px; font-weight:400; color:var(--text3); transition:transform .15s;}
+details.term[open] summary::after{transform:rotate(45deg);}
+details.term .def{padding:0 14px 12px; font-size:14px; color:var(--text2);}
+.gcol{columns:1;}
+/* random quiz button */
+.quizbar{max-width:640px; margin:0 auto; padding:8px 16px;}
+.random-btn{width:100%;}
+/* footer tip */
+.tip{
+  background:var(--surface); border:1px dashed var(--border); border-radius:12px;
+  padding:14px 16px; font-size:13.5px; color:var(--text2); margin-top:24px;
+}
+.tip b{color:var(--text);}
+/* jump nav */
+.navchips{display:flex; gap:8px; overflow-x:auto; padding:4px 0 8px; scrollbar-width:none;}
+.navchips::-webkit-scrollbar{display:none;}
+.navchips a{
+  flex:0 0 auto; font-size:13px; font-weight:600; text-decoration:none; color:var(--text2);
+  border:1px solid var(--border); background:var(--surface); border-radius:99px; padding:7px 14px;
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="kicker">Instudering · Prov imorgon</div>
+    <h1>Organisk kemi, kol &amp; förbränning</h1>
+    <p class="sub">Åk 8 · Kapitel 7 &amp; 10 · Baserat på lärarens checklista</p>
+  </header>
+</div>
+
+<div class="progress-box">
+  <div class="row">
+    <span class="label">Klarade frågor</span>
+    <span class="pct" id="pct">0 av 0</span>
+  </div>
+  <div class="bar"><div id="barfill"></div></div>
+</div>
+
+<div class="wrap">
+
+  <div class="skolverket">
+    <h2>Koppling till Skolverket <span class="badge">Lgr22 · NO åk 7–9</span></h2>
+    <p class="note">Så här hänger provet ihop med det centrala innehållet i NO (fri tolkning av kursplanen):</p>
+    <ul>
+      <li><b>Kemiska föreningars uppbyggnad och egenskaper</b> – organiska ämnen, funktionella grupper, strukturformler, isomerer (kap 7.1–7.6).</li>
+      <li><b>Kemiska reaktioner</b> – estrifiering, förbränning, fullständig/ofullständig förbränning (kap 7.6, 10.4).</li>
+      <li><b>Fotosyntes, andning och kolets kretslopp</b> – Skolverkets kommentarmaterial lyfter just fotosyntes och förbränning som naturens mest grundläggande kemiska reaktioner (kap 10.3).</li>
+      <li><b>Naturresurser, energi och hållbar utveckling</b> – fossila bränslen, växthuseffekt, surt regn, biobränslen och förnybara energikällor (kap 10.1, 10.2, 10.4).</li>
+    </ul>
+  </div>
+
+  <div class="navchips">
+    <a href="#k7">Kapitel 7</a>
+    <a href="#s71">7.1 Kolatomen</a>
+    <a href="#s72">7.2 Kolväten</a>
+    <a href="#s73">7.3 Omättade</a>
+    <a href="#s74">7.4 Alkoholer</a>
+    <a href="#s75">7.5 Syror</a>
+    <a href="#s76">7.6 Estrar</a>
+    <a href="#k10">Kapitel 10</a>
+    <a href="#s101">10.1 Former</a>
+    <a href="#s102">10.2 Bränslen</a>
+    <a href="#s103">10.3 Kretslopp</a>
+    <a href="#s104">10.4 Miljö</a>
+    <a href="#begrepp">Begrepp</a>
+  </div>
+
+  <div class="quizbar">
+    <button class="btn primary random-btn" id="randomBtn">Slumpa en fråga att träna på</button>
+  </div>
+
+  <!-- ===================== KAPITEL 7 ===================== -->
+  <div class="chapter" id="k7"><span>Kapitel 7 · Organisk kemi</span><div class="line"></div></div>
+
+  <h2 class="sec" id="s71">Kolatomen <span class="num">7.1</span></h2>
+  <p class="secsub">2 frågor</p>
+
+  <div class="card" data-id="q71a">
+    <div class="q">
+      <div class="qtext">Vad är det som gör kolatomen så viktig?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      <b>Kol kan bilda fyra bindningar</b> och kan binda till <b>sig själv</b> i långa kedjor och ringar (kallas <b>katenering</b>). Därför kan kol bilda nästan obegränsat många olika föreningar – kol är grunden i allt levande. Organisk kemi = kemin om kolföreningar.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q71b">
+    <div class="q">
+      <div class="qtext">På vilka tre sätt kan man visa en kolförening?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      <ul>
+        <li><b>Molekylformel</b> – visar vilka atomer och hur många, t.ex. C<sub>2</sub>H<sub>6</sub></li>
+        <li><b>Strukturformel</b> – visar hur atomerna sitter ihop (varje bindning ritas ut)</li>
+        <li><b>Molekylmodell</b> (kulemodell) – bygger modellen i 3D med kulor och pinnar</li>
+      </ul>
+    </div></div>
+  </div>
+
+  <h2 class="sec" id="s72">Kolväten <span class="num">7.2</span></h2>
+  <p class="secsub">4 frågor</p>
+
+  <div class="card" data-id="q72a">
+    <div class="q">
+      <div class="qtext">Vad är alkanserien? Ge exempel på alkanmolekyler och vad de används till.</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      Alkanserien är en <b>familj av mättade kolväten</b> (bara enkelbindningar) med allmänformeln <b>C<sub>n</sub>H<sub>2n+2</sub></b>. Första led: <b>metan</b> CH<sub>4</sub>, <b>etan</b> C<sub>2</sub>H<sub>6</sub>, <b>propan</b> C<sub>3</sub>H<sub>8</sub>, <b>butan</b> C<sub>4</sub>H<sub>10</sub>. De används främst som <b>bränslen</b>: metan i naturgas, propan/butan i gasol och tändare, större alkaner i bensin och diesel.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q72b">
+    <div class="q">
+      <div class="qtext">Vid hur många kolatomer är kolväten gas, flytande respektive fasta?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      <ul>
+        <li><b>Gas:</b> C<sub>1</sub>–C<sub>4</sub> (metan–butan)</li>
+        <li><b>Flytande:</b> C<sub>5</sub>–C<sub>16</sub> (pentan–hexadekan)</li>
+        <li><b>Fast:</b> från C<sub>17</sub> (heptadekan) och uppåt</li>
+      </ul>
+      Ju längre kolkedja, desto högre kokpunkt.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q72c">
+    <div class="q">
+      <div class="qtext">Vad kan kol i gas-, flytande och fast form användas till?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      <ul>
+        <li><b>Gas</b> – matlagning/värme (naturgas), gasoltuber, tändare</li>
+        <li><b>Flytande</b> – drivmedel: bensin, fotogen, diesel; även lösningsmedel</li>
+        <li><b>Fast</b> – stearinljus, paraffin/vaselin, smörjoljor, asfalt, vax</li>
+      </ul>
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q72d">
+    <div class="q">
+      <div class="qtext">Vad innebär att en molekyl kan ha en isomer?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      <b>Isomerer</b> är molekyler med <b>samma molekylformel</b> men <b>olika struktur</b> (atomerna hänger ihop på olika sätt). Exempel: butan C<sub>4</sub>H<sub>10</sub> och isobutan C<sub>4</sub>H<sub>10</sub>. Isomerer kan ha olika egenskaper trots samma formel.
+    </div></div>
+  </div>
+  <h2 class="sec" id="s73">Omättade kolväten <span class="num">7.3</span></h2>
+  <p class="secsub">3 frågor</p>
+
+  <div class="card" data-id="q73a">
+    <div class="q">
+      <div class="qtext">Vad är en alken, hur bildas den och vad används alkener till?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      En <b>alken</b> är ett omättat kolväte med minst en <b>dubbelbindning</b> (C=C) mellan kolatomerna, t.ex. <b>eten</b> C<sub>2</sub>H<sub>4</sub>. Alkener bildas bl.a. vid <b>krackning</b> av större kolväten. De används främst för att göra <b>plaster</b> – eten är byggstenen i polyeten (plastpåsar).
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q73b">
+    <div class="q">
+      <div class="qtext">Vad är en alkyn, hur bildas den och vad används alkyner till?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      En <b>alkyn</b> är ett omättat kolväte med en <b>trippelbindning</b> (C≡C), t.ex. <b>etyn (acetylen)</b> C<sub>2</sub>H<sub>2</sub>. Etyn bildas bl.a. när kalciumkarbid reagerar med vatten. Används i <b>acetylenbrännare</b> för svetsning och skärning av metall – lågan blir mycket het (ca 3 200 °C).
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q73c">
+    <div class="q">
+      <div class="qtext">Vad menas med att ett kolväte är mättat respektive omättat?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      <b>Mättat:</b> alla bindningar mellan kolatomerna är <b>enkelbindningar</b> – varje kol "är nöjt" (alkanserien). <b>Omättat:</b> innehåller minst en <b>dubbel- eller trippelbindning</b> (alkener, alkyner) – då finns plats för fler atomer, t.ex. kan väte adderas. Test i labb: omättade fetter färgar bort permanganatlösningens lila färg.
+    </div></div>
+  </div>
+
+  <h2 class="sec" id="s74">Alkoholer <span class="num">7.4</span></h2>
+  <p class="secsub">4 frågor</p>
+
+  <div class="card" data-id="q74a">
+    <div class="q">
+      <div class="qtext">Vad är skillnaden mellan ett kolväte och en alkohol?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      En alkohol är ett kolväte där <b>en väteatom har bytts ut mot en OH-grupp</b> (–OH, hydroxylgrupp). Exempel: metan CH<sub>4</sub> → metanol CH<sub>3</sub>OH. OH-gruppen gör alkoholen <b>polär</b> och förändrar egenskaperna helt.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q74b">
+    <div class="q">
+      <div class="qtext">Varför kan alkoholer lösa sig i vatten fastän kolväten inte kan?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      Vatten är <b>polärt</b>, och alkoholens OH-grupp är också polär och kan bilda <b>vätebindningar</b> med vattnet – därför gillar de varandra. Kolväten är <b>opolära</b> och kan inte bilda vätebindningar, därför löser de sig inte i vatten (olja och vatten skiljer sig åt).
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q74c">
+    <div class="q">
+      <div class="qtext">Rita/beskriv strukturformler för metanol, etanol och propanol. Vad skiljer dem från metan, etan och propan?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      Samma kolkedjor som alkanerna, men sista väteatomen är utbytt mot OH:<br>
+      <b>Metanol</b> CH<sub>3</sub>OH (motsvarar metan CH<sub>4</sub>) · <b>Etanol</b> C<sub>2</sub>H<sub>5</sub>OH (mot etan C<sub>2</sub>H<sub>6</sub>) · <b>Propanol</b> C<sub>3</sub>H<sub>7</sub>OH (mot propan C<sub>3</sub>H<sub>8</sub>).<br>
+      Skillnaden: alkoholen har en <b>OH-grupp</b> istället för en H – det gör den polär och löslig i vatten.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q74d">
+    <div class="q">
+      <div class="qtext">Vad är en flervärd alkohol, vilka egenskaper får de och ge två exempel.</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      En flervärd alkohol har <b>två eller fler OH-grupper</b>. Ju fler OH-grupper, desto fler vätebindningar → <b>högre kokpunkt</b>, ofta sötsmakande, sirupsaktiga och väldigt lösliga i vatten. Exempel: <b>glykol</b> (2 OH, frostskydd i bil) och <b>glycerol/glycerin</b> (3 OH, i tvål, mat och läkemedel).
+    </div></div>
+  </div>
+
+  <h2 class="sec" id="s75">Organiska syror <span class="num">7.5</span></h2>
+  <p class="secsub">4 frågor</p>
+
+  <div class="card" data-id="q75a">
+    <div class="q">
+      <div class="qtext">Vilken funktionell grupp kännetecknar organiska syror, och vilka atomer består den av?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      <b>Karboxylgruppen</b>, –COOH, som består av <b>kol, två syre och en väte</b> (C, O, O, H). Det är väteatomen i OH-delen som kan lossna som H<sup>+</sup> – det gör syran sur.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q75b">
+    <div class="q">
+      <div class="qtext">Vad innebär det att de flesta organiska syror är "svaga syror" i vatten?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      Att de <b>inte delar upp sig helt</b> (joniserar delvis) i vatten – bara en liten del av molekylerna lämnar ifrån sig H<sup>+</sup>. Jämför med starka syror (saltsyra, svavelsyra) som delar upp sig nästan fullständigt. Svag syra = pH under 7, men inte lika lågt som en stark syra.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q75c">
+    <div class="q">
+      <div class="qtext">Hur bildas namnet på en organisk syra? Ge exempel på vardagliga syror.</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      Ta alkanens namn och byt ändelsen <b>-an mot -ansyra</b>: metan → <b>metansyra</b>, etan → <b>etansyra</b>. Vardagliga exempel: <b>ättiksyra</b> (etansyra, i vinäger), <b>citronsyra</b> (i citron), <b>mjölksyra</b> (i yoghurt, trötta muskler), <b>myrsyra</b> (metansyra, i myrstick).
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q75d">
+    <div class="q">
+      <div class="qtext">Var kan man hitta organiska syror i naturen?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      De finns överallt i levande växter och djur: <b>fruktsyror</b> i frukt och bär (citronsyra, äppelsyra), <b>mjölksyra</b> i surmjölksprodukter och muskler, <b>myrsyra</b> hos myror, fettsyror i fetter och oljor (t.ex. stearinsyra).
+    </div></div>
+  </div>
+
+  <h2 class="sec" id="s76">Estrar <span class="num">7.6</span></h2>
+  <p class="secsub">2 frågor</p>
+
+  <div class="card" data-id="q76a">
+    <div class="q">
+      <div class="qtext">Vad är en ester, hur bildas den och vilken rest bildas vid reaktionen?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      En ester bildas när en <b>organisk syra reagerar med en alkohol</b> (kallas estrifiering, ofta med syra som katalysator). Vid reaktionen bildas även <b>vatten</b> som "rest" – en vät-atom från syran och en OH-grupp från alkoholen slås ihop till H<sub>2</sub>O.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q76b">
+    <div class="q">
+      <div class="qtext">Hur kan kemister använda estrar?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      Estrar har ofta <b>fruktig doft/smak</b> och används till:
+      <ul>
+        <li><b>Parfymer och doftämnen</b></li>
+        <li><b>Smakämnen</b> i godis, läsk och mat</li>
+        <li><b>Lösningsmedel</b> (t.ex. i nagellack)</li>
+        <li><b>Explosivämnen</b> – nitroglycerin är en ester; tillverkar man dynamit av</li>
+      </ul>
+    </div></div>
+  </div>
+  <!-- ===================== KAPITEL 10 ===================== -->
+  <div class="chapter" id="k10"><span>Kapitel 10 · Kol &amp; förbränning</span><div class="line"></div></div>
+
+  <h2 class="sec" id="s101">Former av kol <span class="num">10.1</span></h2>
+  <p class="secsub">4 frågor</p>
+
+  <div class="card" data-id="q101a">
+    <div class="q">
+      <div class="qtext">Hur kan väldigt packade strukturer av kol bildas, och vilka exempel finns det?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      När kolatomer binder sig till varandra i starka, ordnade nätverk (kristallstrukturer) bildas packade former:
+      <ul>
+        <li><b>Diamant</b> – varje kol bunden till 4 andra i tetraederform; världens hårdaste naturliga ämne, används i borrar och smycken</li>
+        <li><b>Grafit</b> – kolatomer i lager (varje kol bunden till 3); mjuk, smörjande och leder elektrisk ström (blyertspenna, batterier)</li>
+      </ul>
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q101b">
+    <div class="q">
+      <div class="qtext">Vad är amorft kol, och vad är motsatsen?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      <b>Amorft kol</b> = kol utan ordnad kristallstruktur, atomerna sitter huller om buller. Exempel: <b>träkol, kokoskol, sot</b>. Motsatsen är <b>kristallint</b> (ordnat) kol: <b>diamant och grafit</b>.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q101c">
+    <div class="q">
+      <div class="qtext">På vilket sätt kan människan bygga upp kolstrukturer? Vilka exempel finns?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      Människan kan <b>själv konstruera</b> nya kolmaterial atom för atom / molekyl för molekyl:
+      <ul>
+        <li><b>Grafen</b> – ett enda lager grafit, ett atomlager tunt; supersnabb elektronström, superslittålig</li>
+        <li><b>Kolnanorör</b> – rullade grafenark; extremt starka och lätta</li>
+        <li><b>Fullerener</b> ("buckyballs") – kolbollar formade som fotbollar, C<sub>60</sub></li>
+      </ul>
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q101d">
+    <div class="q">
+      <div class="qtext">Vilka miljöfaktorer krävs för att döda växter och havsdjur ska omvandlas till fossila bränslen? Hur skiljer sig tiden för bildning jämfört med vår förbrukning?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      Krävs: <b>syrefattig miljö</b> (så materialet inte ruttnar/bryts ner), sedan <b>tjocka lager slam och sediment</b> som packar materialet, plus <b>högt tryck och värme</b> under mycket lång tid → kol omvandlas till torv → stenkol, och till olja/naturgas.<br>
+      <b>Tidsskillnaden:</b> fossila bränslen bildas under <b>miljontals år</b>, men människan förbrukar dem på bara <b>hundra år</b>. Vi använder alltså upp dem <b>mycket snabbare än de hinner bildas</b> – därför är de en ändlig resurs (icke-förnybar).
+    </div></div>
+  </div>
+
+  <h2 class="sec" id="s102">Fossila bränslen <span class="num">10.2</span></h2>
+  <p class="secsub">4 frågor</p>
+
+  <div class="card" data-id="q102a">
+    <div class="q">
+      <div class="qtext">Vilka två huvudsakliga skäl finns till att vi måste ställa om till andra energikällor?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      <b>1. De tar slut</b> – fossila bränslen är ändliga (icke-förnybara); vi förbrukar dem snabbare än de bildas.<br>
+      <b>2. Klimatpåverkan</b> – förbränning släpper ut växthusgaser (CO<sub>2</sub>), som förstärker växthuseffekten och leder till global uppvärmning.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q102b">
+    <div class="q">
+      <div class="qtext">Vilka energikällor från kol finns det, och var kommer de ifrån?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      Alla bildas av <b>dött organiskt material</b> som pressats under lång tid:
+      <ul>
+        <li><b>Torv</b> – delvis omvandlad växtråtta, yngst</li>
+        <li><b>Stenkol</b> – omvandlade träd/växter från urtida skogar</li>
+        <li><b>Råolja</b> – omvandlade havsorganismer (plankton, alger)</li>
+        <li><b>Naturgas</b> – metan, bildas tillsammans med olja/kol</li>
+      </ul>
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q102c">
+    <div class="q">
+      <div class="qtext">Hur hänger antalet kolatomer och kokpunkten ihop i olika ämnen?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      <b>Ju fler kolatomer, desto högre kokpunkt.</b> Större molekyler har starkare bindningar mellan varandra (van der Waals-bindningar) och behöver mer energi för att skiljas åt. Det är därför metan är gas vid rumstemperatur medan långa kolväten är fasta vaxer.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q102d">
+    <div class="q">
+      <div class="qtext">Vad är krackning, och hur kan vi använda det för att få mer bensin?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      <b>Krackning</b> (eng. "crack" = spricka) = man <b>spränger långa kolkedjor till kortare</b> med hjälp av värme (och katalysator). Råoljan innehåller mer tunga, långa kolväten än vad som efterfrågas – genom krackning omvandlas de till kortare molekyler som ingår i <b>bensin</b>, samt till viktiga råvaror som <b>eten</b> (till plast).
+    </div></div>
+  </div>
+
+  <h2 class="sec" id="s103">Kolets kretslopp <span class="num">10.3</span></h2>
+  <p class="secsub">2 frågor</p>
+
+  <div class="card" data-id="q103a">
+    <div class="q">
+      <div class="qtext">Vad är kolets kretslopp?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      Kol <b>cirkulerar ständigt</b> mellan luft, växter, djur och mark: <b>Fotosyntes</b> binder koldioxid (CO<sub>2</sub>) från luften till glukos i växterna → djur äter växterna → <b>cellandning</b> och <b>förbränning</b> släpper ut CO<sub>2</sub> igen → växter tar upp det på nytt. Stora delar av kolets kretslopp sker i marken där organiskt material bryts ner. Under lång tid kan kol lagras som fossila bränslen.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q103b">
+    <div class="q">
+      <div class="qtext">Hur binder kolet ihop allt levande?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      Allt liv byggs upp av <b>kolföreningar</b> – kolhydrater, proteiner och fetter innehåller kol. Via <b>fotosyntesen</b> omvandlar växterna luftens CO<sub>2</sub> till socker (glukos) som lagrar kemisk energi. Alla djur (och människor) får sin kol och energi genom att äta växter eller andra djur. På så sätt är alla organismer bundna till varandra i samma kretslopp.
+    </div></div>
+  </div>
+
+  <h2 class="sec" id="s104">Miljöpåverkan <span class="num">10.4</span></h2>
+  <p class="secsub">8 frågor</p>
+
+  <div class="card" data-id="q104a">
+    <div class="q">
+      <div class="qtext">Vad är växthuseffekten, och hur påverkar CO<sub>2</sub> och metan den?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      Solens strålar värmer jorden, som sedan sänder ut värmestrålning (infrarött ljus) tillbaka. <b>Växthusgaser</b> – främst <b>koldioxid (CO<sub>2</sub>)</b> och <b>metan (CH<sub>4</sub>)</b> – fungerar som ett täcke som <b>fångar upp värmestrålningen</b> och håller kvar värmen i atmosfären. Det är naturligt och nödvändigt – men när halterna av dessa gaser ökar blir "täcket" tjockare och jorden värms upp mer.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q104b">
+    <div class="q">
+      <div class="qtext">Vad hade hänt om jorden inte hade någon växthuseffekt?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      Utan växthuseffekten hade medeltemperaturen varit ca <b>–18 °C</b> istället för ca <b>+15 °C</b> – jorden hade varit en <b>frusen isten</b> utan flytande vatten, och inget liv som vi känner det hade kunnat finnas.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q104c">
+    <div class="q">
+      <div class="qtext">Vad är konsekvensen av att växthuseffekten ökar?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      <b>Global uppvärmning</b>: jordens medeltemperatur stiger, vilket ger
+      <ul>
+        <li>Smältande glaciärer och isar → <b>höjda havsnivåer</b> (städer vid kusten översvämmas)</li>
+        <li>Förändrade klimatzoner och <b>extremväder</b> (torka, översvämningar, stormar)</li>
+        <li>Problem för djur och växter som inte hinner anpassa sig</li>
+      </ul>
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q104d">
+    <div class="q">
+      <div class="qtext">Vilka gaser bildas vid kolförbränning respektive i bilmotorer, och vad händer när de möter regnvatten?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      <ul>
+        <li><b>Fullständig förbränning</b> av kol → <b>koldioxid (CO<sub>2</sub>)</b></li>
+        <li>Bränsle med svavel → <b>svaveldioxid (SO<sub>2</sub>)</b></li>
+        <li><b>Bilmotor</b> → koldioxid + <b>kväveoxider (NO<sub>x</sub>)</b> (luftens kväve reagerar vid hög temperatur)</li>
+      </ul>
+      SO<sub>2</sub> och NO<sub>x</sub> löser sig i regnvatten och bildar <b>syr</b> → <b>surt regn</b> (svavelsyra &amp; salpetersyra), som försurar sjöar, skadar skogar och fräter på byggnader.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q104e">
+    <div class="q">
+      <div class="qtext">Vilken mycket giftig gas bildas vid ofullständig förbränning?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      <b>Kolmonoxid (CO)</b>. Den bildas när förbränningen får <b>för lite syre</b>. CO är farlig eftersom den <b>tar platsen för syret</b> i blodet (binder till hemoglobinet) – kroppen får syrebrist och man kan <b>kvävas inomhus</b>. Därför ska man aldrig elda utan god ventilation.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q104f">
+    <div class="q">
+      <div class="qtext">Hur fungerar bilens katalysator, och vilket utsläpp minskar den INTE?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      Katalysatorn är en metallbelagd "rensningsstation" i avgasröret som <b>omvandlar giftiga gaser</b>:
+      <ul>
+        <li>Kolmonoxid (CO) → koldioxid (CO<sub>2</sub>)</li>
+        <li>Kväveoxider (NO<sub>x</sub>) → kvävgas (N<sub>2</sub>) + syre (O<sub>2</sub>)</li>
+        <li>Oförbrända kolväten → CO<sub>2</sub> + vatten</li>
+      </ul>
+      Den minskar <b>inte koldioxiden (CO<sub>2</sub>)</b> – koldioxid är ju själva produkten av förbränningen och släpps ut ändå. (Den minskar heller inte lustgasen N<sub>2</sub>O helt.)
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q104g">
+    <div class="q">
+      <div class="qtext">Vad är biobränslen, och hur ingår de i det naturliga kretsloppet?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      <b>Biobränslen</b> är bränslen gjorda av <b>nyligen levande organismer</b> – t.ex. <b>etanol</b> från socker eller majs, <b>biogas</b> (metan) från rötning av avlopp/mat, träflis, halm. De är del av <b>kolets naturliga kretslopp</b>: växterna tog upp CO<sub>2</sub> från luften när de växte, och samma mängd CO<sub>2</sub> släpps ut vid förbränningen.
+    </div></div>
+  </div>
+
+  <div class="card" data-id="q104h">
+    <div class="q">
+      <div class="qtext">Varför ökar inte växthusgaser när man använder biobränslen?</div>
+      <div class="meta">
+        <button class="btn" data-answer-btn>Visa svar</button>
+        <label class="check"><input type="checkbox" data-check> Kan jag</label>
+      </div>
+    </div>
+    <div class="answer"><div class="inner">
+      För att koldioxiden som släpps ut <b>nyligen togs upp från atmosfären</b> av växterna när de växte (fotosyntes). När biobränslet sedan förbränns släpps samma mängd CO<sub>2</sub> ut igen → <b>netto</b> ingen extra koldioxid i atmosfären (cirkeln sluts). Fossila bränslen däremot släpper ut kol som <b>lagrats i miljontals år</b> – det är nytt kol i atmosfären, så halterna stiger.
+    </div></div>
+  </div>
+  <!-- ===================== BEGREPPSLISTA ===================== -->
+  <div class="chapter" id="begrepp"><span>Begreppslista · tappa för att se förklaring</span><div class="line"></div></div>
+
+  <h2 class="sec" style="margin-top:8px;">Del 1 · Organisk kemi (kap 7)</h2>
+
+  <details class="term"><summary>Organisk kemi</summary><div class="def">Kemin om kolföreningar – alla ämnen som innehåller kol (utom enkla som CO<sub>2</sub> och karbonater, som räknas som oorganiska).</div></details>
+  <details class="term"><summary>Kolförening</summary><div class="def">En kemisk förening som innehåller kolatomer.</div></details>
+  <details class="term"><summary>Bindning</summary><div class="def">Det som håller ihop atomer i en molekyl – kol bildar alltid 4 bindningar.</div></details>
+  <details class="term"><summary>Molekylformel</summary><div class="def">Visar vilka atomer en molekyl innehåller och hur många, t.ex. C<sub>2</sub>H<sub>6</sub>.</div></details>
+  <details class="term"><summary>Strukturformel</summary><div class="def">Visar hur atomerna i en molekyl sitter ihop – varje bindning ritas som ett streck.</div></details>
+  <details class="term"><summary>Molekylmodell</summary><div class="def">Fysisk modell av en molekyl byggd med kulor (atomer) och pinnar (bindningar).</div></details>
+  <details class="term"><summary>Kolväte</summary><div class="def">Ämne som bara innehåller kol- och väteatomer, t.ex. metan CH<sub>4</sub>.</div></details>
+  <details class="term"><summary>Alkaner</summary><div class="def">Mättade kolväten med bara enkelbindningar; allmänformel C<sub>n</sub>H<sub>2n+2</sub>.</div></details>
+  <details class="term"><summary>Metan / Etan / Propan / Butan</summary><div class="def">De fyra första alkanerna: CH<sub>4</sub>, C<sub>2</sub>H<sub>6</sub>, C<sub>3</sub>H<sub>8</sub>, C<sub>4</sub>H<sub>10</sub> – gaser vid rumstemperatur.</div></details>
+  <details class="term"><summary>Pentan – Hexan – Heptan – Oktan</summary><div class="def">Fortsättningen på alkanerien: C<sub>5</sub>–C<sub>8</sub>, flytande vid rumstemperatur; oktan ingår i bensin.</div></details>
+  <details class="term"><summary>Isomerer</summary><div class="def">Molekyler med samma molekylformel men olika struktur, t.ex. butan och isobutan.</div></details>
+  <details class="term"><summary>Dubbelbindning</summary><div class="def">Två bindningar mellan samma två kolatomer (C=C) – gör kolväte omättat.</div></details>
+  <details class="term"><summary>Alken</summary><div class="def">Omättat kolväte med minst en dubbelbindning, t.ex. eten C<sub>2</sub>H<sub>4</sub>; byggsten i plaster.</div></details>
+  <details class="term"><summary>Eten</summary><div class="def">Enklaaste alkenen, C<sub>2</sub>H<sub>4</sub>; monomer i polyeten (plastpåsar).</div></details>
+  <details class="term"><summary>Trippelbindning</summary><div class="def">Tre bindningar mellan samma två kolatomer (C≡C).</div></details>
+  <details class="term"><summary>Alkyn</summary><div class="def">Omättat kolväte med trippelbindning, t.ex. etyn.</div></details>
+  <details class="term"><summary>Etyn (acetylen)</summary><div class="def">Enklaaste alkynen, C<sub>2</sub>H<sub>2</sub>; bränsle i svetsbrännare.</div></details>
+  <details class="term"><summary>Mättat / omättat kolväte</summary><div class="def">Mättat = bara enkelbindningar. Omättat = minst en dubbel- eller trippelbindning.</div></details>
+  <details class="term"><summary>OH-grupp</summary><div class="def">Hydroxylgruppen –OH; gör alkoholer polära och lösliga i vatten.</div></details>
+  <details class="term"><summary>Flervärd alkohol</summary><div class="def">Alkohol med två eller fler OH-grupper, t.ex. glykol och glycerol; högre kokpunkt.</div></details>
+  <details class="term"><summary>Metanol (träsprit)</summary><div class="def">CH<sub>3</sub>OH – mycket giftig alkohol; kan ge blindhet/döden vid förtäring.</div></details>
+  <details class="term"><summary>Etanol</summary><div class="def">C<sub>2</sub>H<sub>5</sub>OH – alkoholen i öl, vin och sprit; även biobränsle.</div></details>
+  <details class="term"><summary>Glykol</summary><div class="def">Tvåvärd alkohol med 2 OH-grupper; används som frostskydd i bilar.</div></details>
+  <details class="term"><summary>Glycerol (glycerin)</summary><div class="def">Trevärd alkohol med 3 OH-grupper; finns i fetter, tvål, mat.</div></details>
+  <details class="term"><summary>Organisk syra</summary><div class="def">Kolförening med karboxylgrupp –COOH; oftast svag syra.</div></details>
+  <details class="term"><summary>Syragrupp (karboxylgrupp)</summary><div class="def">Funktionella gruppen –COOH (kol, två syre, en väte) som gör syran sur.</div></details>
+  <details class="term"><summary>Metansyra (myrsyra)</summary><div class="def">Enklaaste organiska syran HCOOH; finns i myrstick.</div></details>
+  <details class="term"><summary>Etansyra (ättiksyra)</summary><div class="def">CH<sub>3</sub>COOH – syran i vinäger, 5 % i hushållsvinäger.</div></details>
+  <details class="term"><summary>Svag syra</summary><div class="def">Syran som bara delar upp sig delvis i vatten (lämnar få H<sup>+</sup>).</div></details>
+  <details class="term"><summary>Stearinsyra</summary><div class="def">Långkedjad fettsyra i talg/stearinljus.</div></details>
+  <details class="term"><summary>Fruktsyror</summary><div class="def">Organiska syror i frukt och bär, t.ex. citronsyra och äppelsyra.</div></details>
+  <details class="term"><summary>Ester</summary><div class="def">Bildas när organisk syra + alkohol reagerar; ofta fruktig doft och smak.</div></details>
+  <details class="term"><summary>Lösningsmedel</summary><div class="def">Ämne som kan lösa andra ämnen, t.ex. estrer i nagellack.</div></details>
+  <details class="term"><summary>Nitroglycerin</summary><div class="def">Ester som är ett mycket kraftfullt sprängämne.</div></details>
+  <details class="term"><summary>Dynamit</summary><div class="def">Sprängämne där nitroglycerin sugs upp i kiselgur; uppfanns av Alfred Nobel.</div></details>
+
+  <h2 class="sec">Del 2 · Kol &amp; förbränning (kap 10)</h2>
+
+  <details class="term"><summary>Diamant</summary><div class="def">Kristallint kol där varje kol binder 4 andra; hårdast naturliga ämnet.</div></details>
+  <details class="term"><summary>Grafit</summary><div class="def">Kristallint kol i lager; mjuk, smörjande, leder ström (blyerts, batterier).</div></details>
+  <details class="term"><summary>Amorft kol</summary><div class="def">Kol utan ordnad struktur, t.ex. träkol, sot, kokoskol.</div></details>
+  <details class="term"><summary>Grafen</summary><div class="def">Ett enda lager kolatomer; extremt starkt, tunt och leder ström suveränt.</div></details>
+  <details class="term"><summary>Fossila bränslen</summary><div class="def">Bränslen bildade av dött organiskt material under miljontals år: kol, olja, gas.</div></details>
+  <details class="term"><summary>Naturgas (metan)</summary><div class="def">Gas som nästan bara är metan CH<sub>4</sub>; ofta hittas den tillsammans med olja.</div></details>
+  <details class="term"><summary>Stenkol</summary><div class="def">Fossilt bränsle från urtida växter; mest kol av de fossila bränslena.</div></details>
+  <details class="term"><summary>Torv</summary><div class="def">Yngsta fossila bränslet – delvis omvandlad växtråtta.</div></details>
+  <details class="term"><summary>Råolja</summary><div class="def">Fossilt flytande bränsle från havsorganismer; råvara för bensin, plast, mm.</div></details>
+  <details class="term"><summary>Oljeraffinaderi</summary><div class="def">Anläggning där råolja separeras till olika produkter.</div></details>
+  <details class="term"><summary>Fraktionerad destillation</summary><div class="def">Metod som separerar råoljan efter kokpunkt – olika fraktioner som bensin, fotogen, diesel.</div></details>
+  <details class="term"><summary>Krackning</summary><div class="def">Spräckning av långa kolkedjor till kortare med värme/katalysator – ger mer bensin.</div></details>
+  <details class="term"><summary>Kemisk bunden energi</summary><div class="def">Energi lagrad i kemiska bindningar som frigörs vid reaktioner, t.ex. förbränning.</div></details>
+  <details class="term"><summary>Fotosyntes</summary><div class="def">Växter binder CO<sub>2</sub> + vatten till glukos och syrgas med hjälp av solljus: 6CO<sub>2</sub>+6H<sub>2</sub>O → C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>+6O<sub>2</sub>.</div></details>
+  <details class="term"><summary>Glukos (druvsocker)</summary><div class="def">C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> – sockret som växter bildar och lagrar energi i.</div></details>
+  <details class="term"><summary>Syrgas</summary><div class="def">O<sub>2</sub> – gas som behövs vid förbränning och andning.</div></details>
+  <details class="term"><summary>Koldioxid</summary><div class="def">CO<sub>2</sub> – växthusgas som bildas vid förbränning och andning.</div></details>
+  <details class="term"><summary>Cellandning</summary><div class="def">Motatsen till fotosyntesen – celler bryter ner glukos till energi, CO<sub>2</sub> och vatten.</div></details>
+  <details class="term"><summary>Förbränning</summary><div class="def">Ämne reagerar med syre och avger värme och ljus, t.ex. C + O<sub>2</sub> → CO<sub>2</sub>.</div></details>
+  <details class="term"><summary>Kolets kretslopp</summary><div class="def">Kol cirkulerar mellan atmosfär, växter, djur och jord via fotosyntes, andning och nedbrytning.</div></details>
+  <details class="term"><summary>Atmosfär</summary><div class="def">Luftlagret som omger jorden.</div></details>
+  <details class="term"><summary>Växthuseffekten</summary><div class="def">Växthusgaser fångar jordens värmestrålning och håller planeten varm – naturlig och nödvändig.</div></details>
+  <details class="term"><summary>Växthusgaser</summary><div class="def">Gaser som stänger inne värme: CO<sub>2</sub>, metan CH<sub>4</sub>, vattenånga, mm.</div></details>
+  <details class="term"><summary>Global uppvärmning</summary><div class="def">Att jordens medeltemperatur stiger på grund av förstärkt växthuseffekt.</div></details>
+  <details class="term"><summary>Surt regn (försurning)</summary><div class="def">Regn med syra från SO<sub>2</sub> och NO<sub>x</sub>; skadar sjöar, skogar och byggnader.</div></details>
+  <details class="term"><summary>Kolmonoxid</summary><div class="def">CO – giftig gas vid ofullständig förbränning; tar syrets plats i blodet.</div></details>
+  <details class="term"><summary>Förnybara energikällor</summary><div class="def">Energi som inte tar slut: sol, vind, vatten, biobränslen.</div></details>
+  <details class="term"><summary>Biobränsle</summary><div class="def">Bränsle från nyligen levande organismer, t.ex. etanol och biogas; netto noll CO<sub>2</sub>.</div></details>
+
+  <div class="tip">
+    <b>Sluttip inför provet:</b> Börja med att kryssa i alla frågor du redan kan. Gå sedan igenom resten – läs frågan, försök svara högt, titta på facit. Avsluta med att slumpa några frågor och testa dig själv utan att titta först. Lycka till!
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+  var total = cards.length;
+  var pct = document.getElementById('pct');
+  var barfill = document.getElementById('barfill');
+  var STORE_KEY = 'instuderingKemiAk8';
+
+  function loadState(){
+    try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }
+    catch(e){ return {}; }
+  }
+  function saveState(s){
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(e){}
+  }
+  var state = loadState();
+
+  function updateProgress(){
+    var done = cards.filter(function(c){
+      return c.querySelector('[data-check]').checked;
+    }).length;
+    pct.textContent = done + ' av ' + total + ' (' + Math.round(done/total*100) + ' %)';
+    barfill.style.width = (done/total*100) + '%';
+  }
+
+  cards.forEach(function(card){
+    var id = card.getAttribute('data-id');
+    var btn = card.querySelector('[data-answer-btn]');
+    var ans = card.querySelector('.answer');
+    var chk = card.querySelector('[data-check]');
+
+    btn.addEventListener('click', function(){
+      ans.classList.toggle('show');
+      btn.textContent = ans.classList.contains('show') ? 'Dölj svar' : 'Visa svar';
+    });
+
+    if(state[id]){
+      chk.checked = true;
+      card.classList.add('done');
+    }
+    chk.addEventListener('change', function(){
+      card.classList.toggle('done', chk.checked);
+      if(chk.checked) state[id] = true; else delete state[id];
+      saveState(state);
+      updateProgress();
+    });
+  });
+  updateProgress();
+
+  document.getElementById('randomBtn').addEventListener('click', function(){
+    var pool = cards.filter(function(c){ return !c.querySelector('[data-check]').checked; });
+    if(!pool.length) pool = cards;
+    var pick = pool[Math.floor(Math.random()*pool.length)];
+    var ans = pick.querySelector('.answer');
+    var btn = pick.querySelector('[data-answer-btn]');
+    if(!ans.classList.contains('show')){
+      ans.classList.add('show');
+      btn.textContent = 'Dölj svar';
+    }
+    pick.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+})();
+</script>
+
+</body>
+</html>
